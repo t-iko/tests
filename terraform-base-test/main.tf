@@ -474,4 +474,49 @@ resource "aws_launch_template" "terraform_test1_launch_template" {
 }
 
 
+resource "aws_autoscaling_group" "example" {
+  availability_zones = ["${var.ap-northeast-1a}","${var.ap-northeast-1c}"]
+  desired_capacity   = 1
+  max_size           = 4
+  min_size           = 1
+  vpc_zone_identifier = ["${aws_subnet.terraform_test1_public_subnet1a.id}","${aws_subnet.terraform_test1_public_subnet1c.id}"]
+  target_group_arns = ["${aws_alb_target_group.terraform_test1_alb_target_group.arn}"]
 
+
+
+  mixed_instances_policy {
+
+    #起動テンプレートの指定
+    launch_template {
+      launch_template_specification {
+        launch_template_id = "${aws_launch_template.terraform_test1_launch_template.id}"
+      }
+
+    #起動させるインスタンスタイプの種類 
+      override {
+        instance_type = "t2.nano"
+      }
+      override {
+        instance_type = "t2.micro"
+      }
+    }
+
+    instances_distribution {
+      #オンデマンドの割当戦略
+      on_demand_allocation_strategy = "prioritized"
+
+      #初期起動時のオンデマンドインスタンス数の指定
+      on_demand_base_capacity = "1"
+
+      #スケーリングするときのオンデマンドインスタンスの比率%（その他はスポットインスタンスとなる）
+      on_demand_percentage_above_base_capacity = "0"
+
+      #スポットの配分戦略
+      spot_allocation_strategy = "lowest-price"
+
+      spot_max_price = "on-demand price"
+
+
+    }
+  }
+}
