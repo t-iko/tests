@@ -473,16 +473,25 @@ resource "aws_launch_template" "terraform_test1_launch_template" {
 ##  user_data = "${base64encode(...)}"
 }
 
-
-resource "aws_autoscaling_group" "example" {
-  availability_zones = ["${var.ap-northeast-1a}","${var.ap-northeast-1c}"]
+######################################
+# オートスケーリンググループの作成
+######################################
+resource "aws_autoscaling_group" "terraform_test1_asg" {
+  availability_zones = ["${var.availability_zone1}","${var.availability_zone2}"]
+  name = "terraform_test1_asg"
   desired_capacity   = 1
   max_size           = 4
   min_size           = 1
   vpc_zone_identifier = ["${aws_subnet.terraform_test1_public_subnet1a.id}","${aws_subnet.terraform_test1_public_subnet1c.id}"]
   target_group_arns = ["${aws_alb_target_group.terraform_test1_alb_target_group.arn}"]
+  health_check_type = "EC2"
+  health_check_grace_period = 300
 
-
+  tag {
+    key = "Name"
+    value = "terraform_test1_asg"
+    propagate_at_launch = true
+  }
 
   mixed_instances_policy {
 
@@ -514,9 +523,25 @@ resource "aws_autoscaling_group" "example" {
       #スポットの配分戦略
       spot_allocation_strategy = "lowest-price"
 
-      spot_max_price = "on-demand price"
-
+#      spot_max_price = "on-demand price"
 
     }
+  }
+}
+
+######################################
+# オートスケーリングポリシーの作成
+######################################
+resource "aws_autoscaling_policy" "terraform_test1_asg_policy" {
+  name                   = "terraform_test1_asg_policy"
+  autoscaling_group_name = "${aws_autoscaling_group.terraform_test1_asg.name}"
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+   predefined_metric_specification {
+    predefined_metric_type = "ALBRequestCountPerTarget"
+    resource_label = "${aws_alb.terraform-test-alb.arn_suffix}/${aws_alb_target_group.terraform_test1_alb_target_group.arn_suffix}"
+   }
+  target_value = 1.0
   }
 }
