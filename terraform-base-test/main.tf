@@ -420,9 +420,9 @@ resource "aws_launch_template" "terraform_test1_launch_template1" {
 resource "aws_autoscaling_group" "terraform_test1_asg" {
   availability_zones = ["${var.availability_zone1}","${var.availability_zone2}"]
   name = "terraform_test1_asg"
-  desired_capacity   = 2
+  desired_capacity   = 0
   max_size           = 4
-  min_size           = 2
+  min_size           = 0
   vpc_zone_identifier = ["${aws_subnet.terraform_test1_private_subnet1a.id}","${aws_subnet.terraform_test1_private_subnet1c.id}"]
   target_group_arns = ["${aws_alb_target_group.terraform_test1_alb_target_group.arn}"]
   health_check_type = "EC2"
