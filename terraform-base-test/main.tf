@@ -332,7 +332,8 @@ resource "aws_alb" "terraform-test-alb" {
   name               = "${var.alb_name}"
   internal           = "${var.alb_internal_enabled}"
   load_balancer_type = "application"
-  #security_groups    = ["${aws_security_group.terraform-test-alb.id}"]
+  security_groups = ["${var.security_group_http_allow}"]
+  
   subnets            = ["${aws_subnet.terraform_test1_public_subnet1a.id}","${aws_subnet.terraform_test1_public_subnet1c.id}"]
 
   #idle_timeout               = 60 
@@ -390,10 +391,10 @@ resource "aws_alb_listener" "terraform_test1_alb_listener" {
 }
 
 ######################################
-# 起動テンプレートを作成する(変数宣言なし)
+# 起動テンプレートを作成する(以降は変数宣言なし)
 ######################################
-resource "aws_launch_template" "terraform_test1_launch_template" {
-  name = "terraform_test1_launch_template"
+resource "aws_launch_template" "terraform_test1_launch_template1" {
+  name = "terraform_test1_launch_template1"
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -404,73 +405,13 @@ resource "aws_launch_template" "terraform_test1_launch_template" {
     }
   }
 
-##  capacity_reservation_specification {
-##    capacity_reservation_preference = "open"
-##  }
-
-##  credit_specification {
-##    cpu_credits = "standard"
-##  }
-
-##  disable_api_termination = true
-
-##  ebs_optimized = true
-
-##  elastic_gpu_specifications {
-##    type = "test"
-##  }
-
-##  elastic_inference_accelerator {
-##    type = "eia1.medium"
-##  }
-
-##  iam_instance_profile {
-##    name = "test"
-##  }
-
   image_id = "ami-012b65360eb29c11c"
 
-##  instance_initiated_shutdown_behavior = "terminate"
-
-##  instance_market_options {
-##    market_type = "spot"
-##  }
+  vpc_security_group_ids = ["${var.security_group_http_allow}"]
 
   instance_type = "t2.micro"
 
-##  kernel_id = "test"
-
   key_name = "new_key_pair"
-
-##  license_specification {
-##    license_configuration_arn = "arn:aws:license-manager:eu-west-1:123456789012:license-configuration:lic-0123456789abcdef0123456789abcdef"
-##  }
-
-##  monitoring {
-##    enabled = true
-##  }
-
-##  network_interfaces {
-##    associate_public_ip_address = true
-##  }
-
-##  placement {
-##    availability_zone = "us-west-2a"
-##  }
-
-##  ram_disk_id = "test"
-
-##  vpc_security_group_ids = ["sg-12345678"]
-
-##  tag_specifications {
-##    resource_type = "instance"
-
-##    tags = {
-##      Name = "test"
-##    }
-##  }
-
-##  user_data = "${base64encode(...)}"
 }
 
 ######################################
@@ -479,10 +420,10 @@ resource "aws_launch_template" "terraform_test1_launch_template" {
 resource "aws_autoscaling_group" "terraform_test1_asg" {
   availability_zones = ["${var.availability_zone1}","${var.availability_zone2}"]
   name = "terraform_test1_asg"
-  desired_capacity   = 1
+  desired_capacity   = 2
   max_size           = 4
-  min_size           = 1
-  vpc_zone_identifier = ["${aws_subnet.terraform_test1_public_subnet1a.id}","${aws_subnet.terraform_test1_public_subnet1c.id}"]
+  min_size           = 2
+  vpc_zone_identifier = ["${aws_subnet.terraform_test1_private_subnet1a.id}","${aws_subnet.terraform_test1_private_subnet1c.id}"]
   target_group_arns = ["${aws_alb_target_group.terraform_test1_alb_target_group.arn}"]
   health_check_type = "EC2"
   health_check_grace_period = 300
@@ -498,12 +439,12 @@ resource "aws_autoscaling_group" "terraform_test1_asg" {
     #起動テンプレートの指定
     launch_template {
       launch_template_specification {
-        launch_template_id = "${aws_launch_template.terraform_test1_launch_template.id}"
+        launch_template_id = "${aws_launch_template.terraform_test1_launch_template1.id}"
       }
 
     #起動させるインスタンスタイプの種類 
       override {
-        instance_type = "t2.nano"
+        instance_type = "t1.micro"
       }
       override {
         instance_type = "t2.micro"
