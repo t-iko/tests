@@ -403,7 +403,7 @@ resource "aws_launch_template" "terraform_clb_test1_launch_template1" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size = 8
+      volume_size = 6
       volume_type = "gp2"
     }
   }
