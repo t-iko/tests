@@ -8,11 +8,11 @@ availability_zone2 = "ap-northeast-1c"
 env = "ikomat_dev"
 
 #####################################
-#VPC Peering Settings（terrafrom-test-vpc[Osaka] to longtest-api-vpc[Tokyo]）
+#VPC Peering Settings（terrafrom-test1-vpc[Osaka] to longtest-api-vpc[Tokyo]）
 #####################################
 #peer_vpc_id = "vpc-XXXXX"
 #peer_vpc_cidr = "10.110.0.0/16"
-#peering_connection_name = "terrafrom-test-to-api"
+#peering_connection_name = "terrafrom-test1-to-api"
 
 #####################################
 #VPC Settings
@@ -32,15 +32,15 @@ public_subnet_name1 = "terraform-test1-publicsubnet-1a"
 public_subnet_name2 = "terraform-test1-publicsubnet-1c"
 private_subnet_name1 = "terraform-test1-privatesubnet-1a"
 private_subnet_name2 = "terraform-test1-privatesubnet-1c"
-public_network_acl_name1 = "terrafrom-test-publicsubnet-acl1"
-public_network_acl_name2 = "terrafrom-test-publicsubnet-acl2"
-private_network_acl_name1 = "terrafrom-test-privatesubnet-acl1"
-private_network_acl_name2 = "terrafrom-test-privatesubnet-acl2"
-public_route_table_name1 = "terrafrom-test-publicsubnet-1a-rt"
-public_route_table_name2 = "terrafrom-test-publicsubnet-1c-rt"
-private_route_table_name1 = "terrafrom-test-privatesubnet-1a-rt"
-private_route_table_name2 = "terrafrom-test-privatesubnet-1c-rt"
-
+public_network_acl_name1 = "terrafrom-test1-publicsubnet-acl1"
+public_network_acl_name2 = "terrafrom-test1-publicsubnet-acl2"
+private_network_acl_name1 = "terrafrom-test1-privatesubnet-acl1"
+private_network_acl_name2 = "terrafrom-test1-privatesubnet-acl2"
+public_route_table_name1 = "terrafrom-test1-publicsubnet-1a-rt"
+public_route_table_name2 = "terrafrom-test1-publicsubnet-1c-rt"
+private_route_table_name1 = "terrafrom-test1-privatesubnet-1a-rt"
+private_route_table_name2 = "terrafrom-test1-privatesubnet-1c-rt"
+security_group_http_allow = "sg-0405eb28f02b27ab7"
 
 #####################################
 #ALB Settings

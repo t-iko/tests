@@ -43,6 +43,7 @@ variable "public_route_table_name1" {}
 variable "public_route_table_name2" {}
 variable "private_route_table_name1" {}
 variable "private_route_table_name2" {}
+variable "security_group_http_allow" {}
 
 #####################################
 #ALB Settings
